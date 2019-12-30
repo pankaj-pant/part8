@@ -3,7 +3,7 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import { gql } from 'apollo-boost'
-import { Query } from 'react-apollo'
+import { Query, ApolloConsumer } from 'react-apollo'
 
 
 const ALL_AUTHORS = gql`
@@ -16,13 +16,52 @@ const ALL_AUTHORS = gql`
 }
 `
 
+const ALL_BOOKS = gql`
+{
+  allBooks  {
+    title,
+    published,
+    author,
+    genres
+  }
+}
+`
+
 const App = () => {
   const [page, setPage] = useState('authors')
-  return <Query query={ALL_AUTHORS}>
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => setPage('authors')}>authors</button>
+        <button onClick={() => setPage('books')}>books</button>
+        <button onClick={() => setPage('add')}>add book</button>
+      </div>
+      <ApolloConsumer>
+        {(client =>
+          <>
+            <Query query={ALL_AUTHORS}>
+              {(result) =>
+                <Authors show={page === 'authors'} result={result} client={client}/>
+              }
+            </Query>
+            <Query query={ALL_BOOKS}>
+              {(result) =>
+                <Books show={page === 'books'} result={result} client={client}/>
+              }
+            </Query>
+            <NewBook show={page === 'add'} />
+          </>
+        )}
+      </ApolloConsumer>
+    </div>
+    
+  )
+  
+
+/*   return <Query query={ALL_AUTHORS}>
     {(result) => { 
-      if ( result.loading ) {
-        return <div>loading...</div>
-      }
+     
   return (
     <div>
       <div>
@@ -33,7 +72,7 @@ const App = () => {
   
       <Authors
         show={page === 'authors'}
-        authors={result.data.allAuthors}
+        result={result}
       />
 
       <Books
@@ -47,7 +86,8 @@ const App = () => {
     </div>
   )
 }}
-</Query>
+</Query> */
+
 }
 
 export default App
