@@ -1,15 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
+import YearForm from './YearForm'
 
-const Authors = ( props ) => {
+const Authors = (props) => {
   if (!props.show) {
     return null
   }
 
-  if ( props.result.loading ) {
+  if (props.result.loading) {
     return <div>loading...</div>
   }
 
   const authors = props.result.data.allAuthors
+  const token = localStorage.getItem('library-user-token')
 
   return (
     <div>
@@ -25,16 +27,16 @@ const Authors = ( props ) => {
               books
             </th>
           </tr>
-          {authors.map(a =>
-            <tr key={a.name}>
-              <td>{a.name}</td>
-              <td>{a.born}</td>
-              <td>{a.bookCount}</td>
+          {authors.map(author =>
+            <tr key={author.name}>
+              <td>{author.name}</td>
+              <td>{author.born}</td>
+              <td>{author.bookCount}</td>
             </tr>
           )}
         </tbody>
       </table>
-
+      {token ? <YearForm authors={authors} editAuthor={props.editAuthor}/> : null }
     </div>
   )
 }
